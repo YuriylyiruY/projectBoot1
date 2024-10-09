@@ -1,28 +1,24 @@
 package buteApp.projectBoot.controllers;
 
 import buteApp.projectBoot.models.User;
-import buteApp.projectBoot.services.PeopleService;
+import buteApp.projectBoot.services.UserServiceImp;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
 @RequestMapping("/")
-public class PeopleController {
+public class UserController {
 
-    private final PeopleService peopleService;
+    private final UserServiceImp peopleService;
 
     @Autowired
-    public PeopleController(PeopleService peopleService) {
+    public UserController(UserServiceImp peopleService) {
         this.peopleService = peopleService;
     }
 
@@ -33,7 +29,8 @@ public class PeopleController {
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id, Model model) {
+    public String show(@RequestParam(name = "id", required = false) String name, Model model) {
+        int id = Integer.parseInt(name);
         model.addAttribute("person", peopleService.findOne(id));
         return "people/show";
     }
@@ -54,17 +51,19 @@ public class PeopleController {
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") int id) {
+    public String edit(Model model, @RequestParam(name = "id", required = false) String name) {
+        System.out.println(name);
+        int id = Integer.parseInt(name);
         model.addAttribute("person", peopleService.findOne(id));
         return "people/edit";
     }
 
     @PostMapping("/{id}")
     public String update(@ModelAttribute("person") @Valid User person, BindingResult bindingResult,
-                         HttpServletRequest request) {
+                         @RequestParam(name = "id", required = false) String name) {
         if (bindingResult.hasErrors())
             return "people/edit";
-        int id = Integer.parseInt(request.getParameter("id"));
+        int id = Integer.parseInt(name);
         peopleService.update(id, person);
         return "redirect:/";
     }

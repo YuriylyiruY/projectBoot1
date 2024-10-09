@@ -1,7 +1,8 @@
 package buteApp.projectBoot.services;
 
 import buteApp.projectBoot.models.User;
-import buteApp.projectBoot.repositories.PeopleRepository;
+import buteApp.projectBoot.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +14,12 @@ import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
-public class PeopleService {
+public class UserServiceImp implements UserService {
 
-    private final PeopleRepository peopleRepository;
+    private final UserRepository peopleRepository;
 
     @Autowired
-    public PeopleService(PeopleRepository peopleRepository) {
+    public UserServiceImp(UserRepository peopleRepository) {
         this.peopleRepository = peopleRepository;
     }
 
@@ -28,7 +29,7 @@ public class PeopleService {
 
     public User findOne(int id) {
         Optional<User> foundPerson = peopleRepository.findById(id);
-        return foundPerson.orElse(null);
+        return foundPerson.orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found"));
     }
 
     @Transactional

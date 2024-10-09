@@ -7,8 +7,11 @@
 <body>
 
 <div th:each="person : ${people}">
-    <a th:href="@{/{id}(id=${person.getId()})}"
-       th:text="${person.getName()}">user</a>
+    <form th:method="GET" th:action="@{{id}(id=${person.getId()})}">
+        <input type="hidden" name="id" th:value="${person.getId()}"/>
+        <input type="submit" th:value="${person.getName()}"/>
+    </form>
+
 </div>
 
 <br/>
